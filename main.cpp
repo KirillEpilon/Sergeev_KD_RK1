@@ -209,8 +209,11 @@ int main(void) {
 			USART_TX((uint8_t*)tx_str,strlen("Write amount of data(0..255)\r\n"));
 			while (!fl);
 			for(data; data; data--){
-				sprintf(tx_str, "%04d\r\n", dataADC[data]);
-				USART_TX((uint8_t*)tx_str,strlen("%04d\r\n")+2);
+				if (statusWork){
+					sprintf(tx_str, "%04d\r\n", dataADC[data]);
+					USART_TX((uint8_t*)tx_str,strlen("%04d\r\n")+2);
+					statusWork=ProcessStatus(statusWork);
+				}
 			}
 			break;
 
@@ -220,10 +223,12 @@ int main(void) {
 
 			while (!fl){
 
-				sprintf(tx_str, "%04d\r\n", dataADC[data]);
-				USART_TX((uint8_t*)tx_str,strlen("%04d\r\n")+2);
+				if (statusWork){
+					sprintf(tx_str, "%04d\r\n", dataADC[data]);
+					USART_TX((uint8_t*)tx_str,strlen("%04d\r\n")+2);
+					statusWork=ProcessStatus(statusWork);
+				}
 			}
-
 			fl=0;
 
 			break;
