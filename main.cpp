@@ -134,7 +134,7 @@ void USART_TX (uint8_t* dt, uint16_t sz)
   }
 }
 
-int ProcessStatus(uint8_t statusWork) {
+uint8_t ProcessStatus(uint8_t statusWork) {
 
 	if(statusWork == DMA_DATA_ADC_RDY)
 		statusWork &= ~DMA_DATA_ADC_RDY;
