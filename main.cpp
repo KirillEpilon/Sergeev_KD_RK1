@@ -136,18 +136,10 @@ void USART_TX (uint8_t* dt, uint16_t sz)
 
 int ProcessStatus(uint8_t statusWork) {
 
-	switch (statusWork) {
-
-	case DMA_DATA_ADC_RDY:
-
+	if(statusWork == DMA_DATA_ADC_RDY)
 		statusWork &= ~DMA_DATA_ADC_RDY;
-
-		break;
-
-	}
-
+	
 	return statusWork;
-
 }
 
 
@@ -166,7 +158,7 @@ int main(void) {
 	while(1){
 
 		sprintf(tx_str,"commands: 1 - for set frequency trgo (default 1 Hz); 2 - for Start/Stop ADC work; 3 - for reseve fixed amount of ADC data; 4 - for reseve ADC data \r\n");
-		USART_TX((uint8_t*)tx_str,strlen("commands: 1 - for set frequency trgo (default 1 Hz); 2 - for Start/Stop ADC work; 3 - for reseve fixed amount of ADC data; 4 - for reseve ADC data \r\n"));
+		USART_TX((uint8_t*)tx_str,strlen(tx_str));
 
 		while (!fl);
 
@@ -176,13 +168,13 @@ int main(void) {
 
 			fl=0;
 			sprintf(tx_str,"Write frequency(1..255)\r\n");
-			USART_TX((uint8_t*)tx_str,strlen("Write frequency(1..255)\r\n"));
+			USART_TX((uint8_t*)tx_str,strlen(tx_str));
 			while (!fl);
 			if (data)
 				Init_TIM3(data);
 			else{
 				sprintf(tx_str,"Null Error\r\n");
-				USART_TX((uint8_t*)tx_str,strlen("Null Error\r\n"));
+				USART_TX((uint8_t*)tx_str,strlen(tx_str));
 			}
 			fl=0;
 			break;
@@ -193,25 +185,26 @@ int main(void) {
 			if(ADC_is_Working){
 				Stop_ADC();
 				ADC_is_Working=0;
+				sprintf(tx_str,"ADC Sucsessfully Stopped\r\n");
 			}
 			else{
 				Start_ADC();
 				ADC_is_Working=1;
+				sprintf(tx_str,"ADC Sucsessfully Started\r\n");
 			}
-			sprintf(tx_str,"ADC Sucsessfully Started/Stopped\r\n");
-			USART_TX((uint8_t*)tx_str,strlen("ADC Sucsessfully Started/Stopped\r\n"));
+			USART_TX((uint8_t*)tx_str,strlen(tx_str));
 			break;
 
 		case 3:
 
 			fl=0;
 			sprintf(tx_str,"Write amount of data(0..255)\r\n");
-			USART_TX((uint8_t*)tx_str,strlen("Write amount of data(0..255)\r\n"));
+			USART_TX((uint8_t*)tx_str,strlen(tx_str));
 			while (!fl);
-			for(data; data; data--){
+			for(uint8_t i = data; i>0; i --){
 				if (statusWork){
-					sprintf(tx_str, "%04d\r\n", dataADC[data]);
-					USART_TX((uint8_t*)tx_str,strlen("%04d\r\n")+2);
+					sprintf(tx_str, "%04d\r\n", dataADC[i]);
+					USART_TX((uint8_t*)tx_str,strlen(tx_str);
 					statusWork=ProcessStatus(statusWork);
 				}
 			}
@@ -220,13 +213,15 @@ int main(void) {
 		case 4:
 
 			fl=0;
+			uint16_t i=0;
 
 			while (!fl){
 
 				if (statusWork){
-					sprintf(tx_str, "%04d\r\n", dataADC[data]);
-					USART_TX((uint8_t*)tx_str,strlen("%04d\r\n")+2);
+					sprintf(tx_str, "%04d\r\n", dataADC[i]);
+					USART_TX((uint8_t*)tx_str,strlen(tx_str));
 					statusWork=ProcessStatus(statusWork);
+					i++;
 				}
 			}
 			fl=0;
