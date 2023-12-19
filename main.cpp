@@ -35,12 +35,20 @@
 #define ADC_CFGR1_EXTSEL_3  (3 << 6)
 #define DMA_DATA_ADC_RDY	(1 << 0)
 
+void RCC_Init(){
+
+	RCC->CFGR &= ~RCC_CFGR_SW_HSE & ~RCC_CFGR_SW_PLL;
+	RCC->CR |= RCC_CR_HSION;
+	while(RCC->CR & RCC_CR_HSIRDY);
+	
+}
 
 void Init_TIM3(uint8_t freq) {
 
 	RCC->APB1ENR |= RCC_APB1ENR_TIM3EN;
-	TIM3->PSC = 8000;
-	TIM3->ARR = 1000 / freq - 1;
+	TIM3->CR1 &= ~TIM_CR1_CEN;
+	TIM3->PSC = 7999;
+	TIM3->ARR = 1000 / freq ;
 	TIM3->CR2 |= TIM_CR2_MMS_1;
 	TIM3->CR1 |= TIM_CR1_CEN;
 
@@ -128,8 +136,8 @@ void USART_TX (uint8_t* dt, uint16_t sz)
   uint16_t ind = 0;
   while (ind<sz)
   {
-    while ((USART1->ISR & USART_ISR_TXE) != (USART_ISR_TXE)) {}
-    USART1->TDR = (uint16_t)dt[ind];
+    while ((USART1->ISR & USART_ISR_TXE) != (USART_ISR_TXE))
+    	USART1->TDR = (uint16_t)dt[ind];
     ind++;
   }
 }
@@ -151,6 +159,7 @@ uint16_t dataADC[1023];
 
 int main(void) {
 
+	RCC_Init();
 	Init_TIM3(1);
 	Init_ADC(dataADC);
 	Init_USART();
